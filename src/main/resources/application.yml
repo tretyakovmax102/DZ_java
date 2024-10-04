@@ -2,28 +2,23 @@ spring:
   application:
     name: t1-java-demo
   datasource:
-    jdbcUrl: jdbc:postgresql://localhost:5432/t1_demo
+    url: jdbc:postgresql://localhost:5433/t1_demo
     username: postgres
     password: "0000"
     driverClassName: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
   liquibase:
     enabled: true
     default-schema: t1_demo
     change-log: db/changelog/db.changelog-master.xml
-    driver-class-name: org.postgresql.Driver
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/t1_demo
-    user: postgres
-    password: "0000"
-security:
-  token: tstrs4g434wyhser5htstrs4g434wyhser5htstrs4g434wyhser5htstrs4g434wyhser5htstrs4g434wyhser5h
-  expiration: 86400000
+
 
 logging:
   level:
-    ROOT: DEBUG
+    ROOT: INFO
     ru.t1.java.demo.controller.ClientController: DEBUG
-    org.apache.kafka: INFO
 
 t1:
   scan-path: ru.t1.java.demo
@@ -39,6 +34,13 @@ t1:
       client_registration: t1_demo_client_registration
       client_id_registered: t1_demo_client_registered
       client_transactions: t1_demo_client_transactions
+      account_registration: t1_demo_accounts
+      transaction_registration: t1_demo_transactions
+      metric_trace: t1_demo_metric_trace
+      error_trace: t1_demo_error_trace
 
     listener:
       poll-timeout: 1000
+
+metric:
+  threshold: 1000

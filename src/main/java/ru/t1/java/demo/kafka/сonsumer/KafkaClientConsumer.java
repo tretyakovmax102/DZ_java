@@ -1,4 +1,4 @@
-package ru.t1.java.demo.kafka;
+package ru.t1.java.demo.kafka.сonsumer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ public class KafkaClientConsumer {
 
     private final ClientService clientService;
 
-    @KafkaListener(id = "${t1.kafka.consumer.group-id}",
+    @KafkaListener(id = "${t1.kafka.consumer.group-id}-client",
             topics = "${t1.kafka.topic.client_registration}",
             containerFactory = "kafkaListenerContainerFactory")
     public void listener(@Payload List<ClientDto> messageList,

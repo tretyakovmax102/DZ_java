@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.t1.java.demo.aop.HandlingResult;
 import ru.t1.java.demo.aop.LogException;
 import ru.t1.java.demo.aop.Track;
-import ru.t1.java.demo.kafka.KafkaClientProducer;
+import ru.t1.java.demo.kafka.producer.KafkaClientProducer;
 import ru.t1.java.demo.model.dto.ClientDto;
 import ru.t1.java.demo.service.ClientService;
 
@@ -27,7 +27,7 @@ public class ClientController {
 
     @LogException
     @Track
-    @GetMapping(value = "/parse")
+    @GetMapping(value = "/parse-client")
     @HandlingResult
     public void parseSource() {
         List<ClientDto> clientDtos = clientService.parseJson();

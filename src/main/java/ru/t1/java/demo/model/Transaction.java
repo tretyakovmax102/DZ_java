@@ -3,8 +3,7 @@ package ru.t1.java.demo.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.data.jpa.domain.AbstractPersistable;
 
 import java.math.BigDecimal;
@@ -12,6 +11,9 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "transaction")
 public class Transaction extends AbstractPersistable<Long> {
 
@@ -20,5 +22,8 @@ public class Transaction extends AbstractPersistable<Long> {
 
     @Column(name = "client_id")
     private Long clientId;
+
+    @Column(name = "account_id")
+    private Long accountId;
 
 }
