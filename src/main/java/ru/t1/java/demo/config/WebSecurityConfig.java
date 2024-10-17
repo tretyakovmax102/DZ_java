@@ -61,6 +61,9 @@ public class WebSecurityConfig {
                         auth.requestMatchers("/api/auth/**").anonymous()
                                 .requestMatchers("/parse/**").anonymous()
                                 .requestMatchers("/parse").anonymous()
+                                .requestMatchers("/api/accounts/{id}/unlock").authenticated()
+                                .requestMatchers("/api/accounts/{id}/register").authenticated()
+                                .requestMatchers("/api/transactions/create-transaction").authenticated()
                                 .anyRequest().permitAll()
                 );
 
