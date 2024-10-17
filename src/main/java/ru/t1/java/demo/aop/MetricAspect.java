@@ -1,51 +1,51 @@
 package ru.t1.java.demo.aop;
 
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * Реализация аспекта, вычисляющего время исполнения методов
- */
+@Async
+@Slf4j
 @Aspect
 @Component
 public class MetricAspect {
 
-    @Qualifier("kafkaTemplateObject")
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private static final AtomicLong START_TIME = new AtomicLong();
 
-    @Value("${metric.threshold}")
-    private long threshold;
-
-    public MetricAspect(KafkaTemplate<String, Object> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
+    @Before("@annotation(ru.t1.java.demo.aop.Track)")
+    public void logExecTime(JoinPoint joinPoint) throws Throwable {
+        log.info("Старт метода: {}", joinPoint.getSignature().toShortString());
+        START_TIME.addAndGet(System.currentTimeMillis());
     }
 
-    @Around("@annotation(Metric)")
-    public Object measureExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
-        long startTime = System.currentTimeMillis();
+    @After("@annotation(ru.t1.java.demo.aop.Track)")
+    public void calculateTime(JoinPoint joinPoint) {
+        long afterTime = System.currentTimeMillis();
+        log.info("Время исполнения: {} ms", (afterTime - START_TIME.get()));
+        START_TIME.set(0L);
+    }
 
-        Object result = joinPoint.proceed();
-
-        long endTime = System.currentTimeMillis();
-        long duration = endTime - startTime;
-
-        if (duration > threshold) {
-            Map<String, Object> message = new HashMap<>();
-            message.put("Method name", joinPoint.getSignature().toShortString());
-            message.put("Duration", duration);
-            message.put("Arguments", joinPoint.getArgs());
-
-            kafkaTemplate.send("t1_demo_metric_trace", message);
+    @Around("@annotation(ru.t1.java.demo.aop.Track)")
+    public Object logExecTime(ProceedingJoinPoint pJoinPoint) throws Throwable {
+        log.info("Вызов метода: {}", pJoinPoint.getSignature().toShortString());
+        long beforeTime = System.currentTimeMillis();
+        Object result = null;
+        try {
+            result = pJoinPoint.proceed();//Important
+        } finally {
+            long afterTime = System.currentTimeMillis();
+            log.info("Время исполнения: {} ms", (afterTime - beforeTime));
         }
 
         return result;
     }
+
 }

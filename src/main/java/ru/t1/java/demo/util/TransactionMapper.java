@@ -8,18 +8,23 @@ import ru.t1.java.demo.model.dto.TransactionDto;
 public class TransactionMapper {
 
     public static Transaction toEntity(TransactionDto dto) {
-        return Transaction.builder()
+        Transaction transaction = Transaction.builder()
                 .amount(dto.getAmount())
                 .clientId(dto.getClientId())
-                .accountId(dto.getAccountId())
+                .type(dto.getType())
+                .status(dto.getStatus())
                 .build();
+        return transaction;
     }
 
-    public static TransactionDto toDto(Transaction entity) {
+    public TransactionDto toDto(Transaction transaction) {
         return TransactionDto.builder()
-                .amount(entity.getAmount())
-                .clientId(entity.getClientId())
-                .accountId(entity.getAccountId())
+                .id(transaction.getId())
+                .amount(transaction.getAmount())
+                .clientId(transaction.getClientId())
+                .accountId(transaction.getAccount().getId())
+                .type(transaction.getType())
+                .status(transaction.getStatus())
                 .build();
     }
 }

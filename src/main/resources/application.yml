@@ -2,23 +2,36 @@ spring:
   application:
     name: t1-java-demo
   datasource:
-    url: jdbc:postgresql://localhost:5433/t1_demo
+    jdbcUrl: jdbc:postgresql://localhost:5433/t1_demo
     username: postgres
     password: "0000"
     driverClassName: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        connection:
+          isolation: 2
   liquibase:
     enabled: true
     default-schema: t1_demo
     change-log: db/changelog/db.changelog-master.xml
-
+    driver-class-name: org.postgresql.Driver
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/t1_demo
+    user: postgres
+    password: "0000"
+security:
+  token: tstrs4g434wyhser5htstrs4g434wyhser5htstrs4g434wyhser5htstrs4g434wyhser5htstrs4g434wyhser5h
+  expiration: 86400000
 
 logging:
   level:
-    ROOT: INFO
+    ROOT: DEBUG
     ru.t1.java.demo.controller.ClientController: DEBUG
+    org.apache.kafka: INFO
+    org.hibernate.SQL: INFO
 
 t1:
   scan-path: ru.t1.java.demo
@@ -35,12 +48,24 @@ t1:
       client_id_registered: t1_demo_client_registered
       client_transactions: t1_demo_client_transactions
       account_registration: t1_demo_accounts
-      transaction_registration: t1_demo_transactions
-      metric_trace: t1_demo_metric_trace
-      error_trace: t1_demo_error_trace
-
+      transaction_registration: t1_demo_client_transactions
+      transaction_errors: t1_demo_client_transaction_errors
+      transaction_cancel: t1_demo_client_transaction_cancel
     listener:
       poll-timeout: 1000
 
-metric:
-  threshold: 1000
+
+track:
+  errors-to-track: JsonParseException, IOException
+  kafka:
+    enabled: ${TRACK_KAFKA_LOG_ENABLED:true}
+    bootstrap-server: localhost:9092
+    data-source-error-topic: t1_demo_data_source_error
+    time-limit-exceed: t1_demo_time_limit_exceed
+  db:
+    enabled: false
+  time-limit-exceed: 1000
+
+  correction:
+    retry:
+      delay: 60000

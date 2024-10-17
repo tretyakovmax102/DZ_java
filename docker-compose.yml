@@ -12,7 +12,7 @@ services:
       - POSTGRES_PASSWORD=0000
       - POSTGRES_DB=t1_demo
     volumes:
-          - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
   zookeeper_t1:
     image: confluentinc/cp-zookeeper:5.5.0

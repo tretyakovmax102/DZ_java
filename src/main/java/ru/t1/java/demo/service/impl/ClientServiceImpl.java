@@ -4,9 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.t1.java.demo.kafka.producer.KafkaClientProducer;
+import org.springframework.transaction.annotation.Transactional;
+import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.Client;
+import ru.t1.java.demo.model.dto.AccountDto;
 import ru.t1.java.demo.model.dto.ClientDto;
+import ru.t1.java.demo.repository.AccountRepository;
 import ru.t1.java.demo.repository.ClientRepository;
 import ru.t1.java.demo.service.ClientService;
 
@@ -20,17 +23,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ClientServiceImpl implements ClientService {
 
-    private final ClientRepository repository;
-    private final KafkaClientProducer kafkaClientProducer;
+    private final AccountRepository accountRepository;
+    private final ClientRepository clientRepository;
 
     @Override
-    public void registerClients(List<Client> clients) {
-        repository.saveAll(clients)
-                .stream()
-                .map(Client::getId)
-                .forEach(kafkaClientProducer::send);
+    @Transactional
+    public void registerClient(ClientDto clientDto) {
+        Client client = Client.builder()
+                .firstName(clientDto.getFirstName())
+                .lastName(clientDto.getLastName())
+                .middleName(clientDto.getMiddleName())
+                .build();
+
+        clientRepository.save(client);
     }
 
+    //    @Transactional
     @Override
     public List<ClientDto> parseJson() {
         ObjectMapper mapper = new ObjectMapper();
@@ -39,7 +47,7 @@ public class ClientServiceImpl implements ClientService {
         try {
             clients = mapper.readValue(new File("src/main/resources/MOCK_DATA.json"), ClientDto[].class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("Exception: ", e);
         }
 
         return Arrays.asList(clients);

@@ -20,6 +20,9 @@ import java.math.BigDecimal;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TransactionDto {
 
+    @JsonProperty("id")
+    private Long id;
+
     @JsonProperty("amount")
     private BigDecimal amount;
 
@@ -28,4 +31,12 @@ public class TransactionDto {
 
     @JsonProperty("account_id")
     private Long accountId;
+
+    @JsonProperty("type")
+    private String type;
+
+    @JsonProperty("status")
+    private String status;
+
+
 }
