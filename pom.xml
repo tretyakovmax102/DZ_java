@@ -11,25 +11,15 @@
     <groupId>ru.t1.java.demo</groupId>
     <artifactId>t1-java-demo</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>t1-java-demo</name>
-    <description>t1-java-demo</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
     <properties>
         <java.version>17</java.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>ru.t1.java.demo</groupId>
+            <artifactId>track-starter</artifactId>
+            <version>0.0.14</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>

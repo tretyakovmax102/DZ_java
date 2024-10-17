@@ -8,10 +8,8 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import ru.t1.java.demo.model.Client;
 import ru.t1.java.demo.model.dto.ClientDto;
 import ru.t1.java.demo.service.ClientService;
-import ru.t1.java.demo.util.ClientMapper;
 
 import java.util.List;
 
@@ -32,17 +30,13 @@ public class KafkaClientConsumer {
         log.debug("Client consumer: Обработка новых сообщений");
 
         try {
-            List<Client> clients = messageList.stream()
-                    .map(dto -> {
-                        dto.setFirstName(key + "@" + dto.getFirstName());
-                        return ClientMapper.toEntity(dto);
-                    })
-                    .toList();
-            clientService.registerClients(clients);
+            for (ClientDto clientDto : messageList) {
+                clientDto.setFirstName(key + "@" + clientDto.getFirstName());
+                clientService.registerClient(clientDto);
+            }
         } finally {
             ack.acknowledge();
         }
-
 
         log.debug("Client consumer: записи обработаны");
     }

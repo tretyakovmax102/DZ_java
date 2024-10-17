@@ -8,10 +8,8 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.dto.AccountDto;
 import ru.t1.java.demo.service.AccountService;
-import ru.t1.java.demo.util.AccountMapper;
 
 import java.util.List;
 
@@ -32,10 +30,13 @@ public class KafkaAccountConsumer {
         log.debug("Account consumer: Обработка новых сообщений");
 
         try {
-            List<Account> accounts = messageList.stream()
-                    .map(AccountMapper::toEntity)
-                    .toList();
-            accountService.createAccount(accounts);
+            for (AccountDto accountDto : messageList) {
+                try {
+                    accountService.registerAccount(accountDto);
+                } catch (RuntimeException e) {
+                    log.error("Ошибка при регистрации аккаунта для клиента с ID: {}", accountDto.getClientId(), e);
+                }
+            }
         } finally {
             ack.acknowledge();
         }

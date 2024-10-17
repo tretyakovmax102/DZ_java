@@ -35,12 +35,25 @@ public class KafkaTransactionConsumer {
             List<Transaction> transactions = messageList.stream()
                     .map(TransactionMapper::toEntity)
                     .toList();
-            transactionService.registerTransaction(transactions);
+            for (Transaction transaction : transactions) {
+                transactionService.processTransaction(transaction);
+            }
         } finally {
             ack.acknowledge();
         }
 
         log.debug("Transaction consumer: записи обработаны");
+    }
+
+    @KafkaListener(topics = "${t1.kafka.topic.transaction_errors}",
+            groupId = "${t1.kafka.consumer.group-id}-transaction-errors")
+    public void listenError(Long transactionId) {
+        transactionService.handleTransactionError(transactionId);
+    }
+
+    @KafkaListener(topics = "${t1.kafka.topic.transaction_cancel}")
+    public void listenCancel(Long transactionId) {
+        transactionService.cancelTransaction(transactionId);
     }
 }
 
