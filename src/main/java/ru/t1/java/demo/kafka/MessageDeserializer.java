@@ -32,7 +32,8 @@ public class MessageDeserializer<T> extends JsonDeserializer<T> {
         try {
             return super.deserialize(topic, data);
         } catch (Exception e) {
-            log.warn("Произошла ошибка во время десериализации сообщения {}", new String(data, StandardCharsets.UTF_8), e);
+            log.warn("Произошла ошибка во время десериализации сообщения {}"
+                    , new String(data, StandardCharsets.UTF_8), e);
             return null;
         }
     }

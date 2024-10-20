@@ -9,4 +9,6 @@ public interface ClientService {
     List<ClientDto> parseJson();
 
     void registerClient(ClientDto clientDto);
+
+    void clearMiddleName(List<ClientDto> dtos);
 }

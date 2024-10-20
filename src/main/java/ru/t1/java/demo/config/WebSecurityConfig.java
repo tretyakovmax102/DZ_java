@@ -64,6 +64,8 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/accounts/{id}/unlock").authenticated()
                                 .requestMatchers("/api/accounts/{id}/register").authenticated()
                                 .requestMatchers("/api/transactions/create-transaction").authenticated()
+                                .requestMatchers("/actuator/prometheus").anonymous()
+                                .requestMatchers("/actuator/*").anonymous()
                                 .anyRequest().permitAll()
                 );
 

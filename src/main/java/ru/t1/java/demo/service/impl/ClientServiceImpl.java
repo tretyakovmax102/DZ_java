@@ -52,4 +52,11 @@ public class ClientServiceImpl implements ClientService {
 
         return Arrays.asList(clients);
     }
+
+    @Override
+    public void clearMiddleName(List<ClientDto> dtos) {
+        log.info("Clearing middle name");
+        dtos.forEach(dto -> dto.setMiddleName(null));
+        log.info("Done clearing middle name");
+    }
 }

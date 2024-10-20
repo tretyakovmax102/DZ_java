@@ -9,16 +9,19 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.t1.java.demo.kafka.producer.KafkaTransactionProducer;
 import ru.t1.java.demo.model.Account;
 import ru.t1.java.demo.model.Transaction;
+import ru.t1.java.demo.model.dto.CheckResponse;
 import ru.t1.java.demo.model.dto.TransactionDto;
 import ru.t1.java.demo.repository.TransactionRepository;
 import ru.t1.java.demo.service.AccountService;
 import ru.t1.java.demo.service.TransactionService;
 import ru.t1.java.demo.util.AccountType;
+import ru.t1.java.demo.web.CheckWebClient;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Сервис управления транзакциями
@@ -35,8 +38,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
     private final KafkaTransactionProducer kafkaTransactionProducer;
+    private final CheckWebClient checkWebClient;
     private AccountService accountService;
-
     @Value("${t1.kafka.topic.transaction_errors}")
     private String transactionErrorTopic;
 
@@ -84,9 +87,13 @@ public class TransactionServiceImpl implements TransactionService {
             kafkaTransactionProducer.sendTo(transactionErrorTopic, transaction.getId());
             return;
         }
-
+        Optional<CheckResponse> checkResponse = checkWebClient.check(account.getClientId());
+        if (checkResponse.isPresent() && checkResponse.get().isBlocked()) {
+            log.warn("Transaction blocked for account {}", account.getId());
+            kafkaTransactionProducer.sendTo(transactionErrorTopic, transaction.getId());
+            return;
+        }
         transaction.setClientId(account.getClientId());
-
         if (transaction.getType().equalsIgnoreCase("DEBIT")) {
             if (account.getBalance().compareTo(transaction.getAmount()) < 0) {
                 kafkaTransactionProducer.sendTo(transactionErrorTopic, transaction.getId());
@@ -101,7 +108,6 @@ public class TransactionServiceImpl implements TransactionService {
             kafkaTransactionProducer.sendTo("t1_demo_client_transactions", transaction.getId());
         }
     }
-
 
     @Override
     @Transactional
