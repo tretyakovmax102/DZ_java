@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/check-transaction"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "allowed": true
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

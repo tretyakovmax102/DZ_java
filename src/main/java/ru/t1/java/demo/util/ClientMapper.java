@@ -19,7 +19,7 @@ public class ClientMapper {
                 .build();
     }
 
-    public static ClientDto toDto(Client entity) {
+    public ClientDto toDto(Client entity) {
         return ClientDto.builder()
                 .firstName(entity.getFirstName())
                 .lastName(entity.getLastName())
@@ -27,7 +27,7 @@ public class ClientMapper {
                 .build();
     }
 
-    @ReplaceResult
+    //@ReplaceResult
     public Client toEntityWithId(ClientDto dto) {
         if (dto.getMiddleName() == null) {
             throw new NullPointerException();
